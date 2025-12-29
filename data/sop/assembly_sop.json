@@ -1,0 +1,62 @@
+{
+    "process_id": "Board Assembly",
+    "station_id": "S4",
+    "sku_id": "S1345780",
+    "sop_version": "v3",
+    "steps": [
+        {
+            "step_id": "STEP_1_Acquire_Board",
+            "order_index": 1,
+            "action": "acquire_board_from_input",
+            "expected_tool": "hand",
+            "expected_part": "pcb",
+            "description": "Worker retrieves the PCB from the input stack or conveyor (from the left/rear).",
+            "input_material_flow": "Input Conveyor/Stack to Worker's Hand"
+        },
+        {
+            "step_id": "STEP_2_Place_on_Jig",
+            "order_index": 2,
+            "action": "place_board_on_fixture",
+            "expected_tool": "hand",
+            "expected_part": "pcb",
+            "description": "Worker places the acquired PCB onto the designated assembly jig/fixture on the conveyor belt.",
+            "input_material_flow": "Worker's Hand to Workstation Fixture"
+        },
+        {
+            "step_id": "STEP_3_Assemble",
+            "order_index": 3,
+            "action": "pick_and_place_component",
+            "expected_tool": "hand",
+            "expected_part": "component",
+            "description": "Worker repeatedly picks components from the supply tray and manually inserts them into the PCB's through-holes until all components required for this station are placed.",
+            "input_material_flow": "Supply Tray to PCB (Iterative)"
+        },
+        {
+            "step_id": "STEP_4_Visual_Check",
+            "order_index": 4,
+            "action": "visual_check_and_adjust",
+            "expected_tool": "hand",
+            "expected_part": "pcb_w_components",
+            "description": "Worker performs a visual check for proper seating, alignment, and polarity of all inserted components.",
+            "input_material_flow": "N/A"
+        },
+        {
+            "step_id": "STEP_5_Fasten_Screws",
+            "order_index": 5,
+            "action": "tighten_screws",
+            "expected_tool": "screwdriver",
+            "expected_part": "screw",
+            "description": "Secure any necessary mechanical components (connectors, heatsinks) with screws/fasteners using a screwdriver.",
+            "input_material_flow": "Screw Dispenser/Tray to PCB"
+        },
+        {
+            "step_id": "STEP_6_Advance_Board",
+            "order_index": 6,
+            "action": "release_board_to_conveyor",
+            "expected_tool": "hand",
+            "expected_part": "pcb_w_components",
+            "description": "Action involves a *lateral* push on the fixture/board edge, resulting in the board shifting its position on the conveyor, even if the shift is minor (1-2 rollers). Prioritize this if assembly is visually complete and a lateral push is detected.",
+            "input_material_flow": "Workstation Fixture to Output Conveyor (moving to the right/front)"
+        }
+    ]
+}

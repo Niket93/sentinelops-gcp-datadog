@@ -1,0 +1,12 @@
+python-dotenv
+pydantic
+fastapi
+uvicorn
+opencv-python
+ffmpeg
+google-cloud-aiplatform
+google-api-core
+ddtrace
+datadog
+python-json-logger
+requests

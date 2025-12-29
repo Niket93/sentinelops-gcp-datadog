@@ -1,0 +1,960 @@
+{
+    "title": "SentinelOps • Executive Command Center",
+    "description": "Vision → Reason → Action: Real-time AI Pipeline Observability for Executives and Engineers",
+    "layout_type": "ordered",
+    "reflow_type": "fixed",
+    "tags": [
+        "team:hackathon"
+    ],
+    "template_variables": [
+        {
+            "name": "service",
+            "default": "sentinelops",
+            "prefix": "service"
+        }
+    ],
+    "widgets": [
+        {
+            "id": 1,
+            "definition": {
+                "type": "note",
+                "content": "# SYSTEM HEALTH",
+                "background_color": "black",
+                "font_size": "24",
+                "text_align": "center",
+                "vertical_align": "center",
+                "show_tick": false,
+                "has_padding": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 0,
+                "width": 12,
+                "height": 1
+            }
+        },
+        {
+            "id": 2,
+            "definition": {
+                "type": "query_value",
+                "title": "HEARTBEAT",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "max:sentinel.app.heartbeat{service:$service}",
+                        "aggregator": "last",
+                        "conditional_formats": [
+                            {
+                                "comparator": ">",
+                                "value": 0.5,
+                                "palette": "white_on_green"
+                            },
+                            {
+                                "comparator": "<=",
+                                "value": 0.5,
+                                "palette": "white_on_red"
+                            }
+                        ]
+                    }
+                ],
+                "autoscale": false,
+                "text_align": "center",
+                "precision": 0
+            },
+            "layout": {
+                "x": 0,
+                "y": 1,
+                "width": 2,
+                "height": 2
+            }
+        },
+        {
+            "id": 3,
+            "definition": {
+                "type": "query_value",
+                "title": "CLIPS PROCESSED",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.throughput.clips{service:$service}.as_count()"
+                    }
+                ],
+                "autoscale": true,
+                "text_align": "center",
+                "precision": 0
+            },
+            "layout": {
+                "x": 2,
+                "y": 1,
+                "width": 2,
+                "height": 2
+            }
+        },
+        {
+            "id": 4,
+            "definition": {
+                "type": "query_value",
+                "title": "LLM CALLS",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.llm.calls{service:$service}.as_count()"
+                    }
+                ],
+                "autoscale": true,
+                "text_align": "center",
+                "precision": 0
+            },
+            "layout": {
+                "x": 4,
+                "y": 1,
+                "width": 2,
+                "height": 2
+            }
+        },
+        {
+            "id": 5,
+            "definition": {
+                "type": "query_value",
+                "title": "SECURITY BLOCKS",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.security.event{service:$service}.as_count()",
+                        "aggregator": "sum",
+                        "conditional_formats": [
+                            {
+                                "comparator": "<=",
+                                "value": 5,
+                                "palette": "white_on_green"
+                            },
+                            {
+                                "comparator": ">",
+                                "value": 5,
+                                "palette": "white_on_yellow"
+                            },
+                            {
+                                "comparator": ">",
+                                "value": 20,
+                                "palette": "white_on_red"
+                            }
+                        ]
+                    }
+                ],
+                "autoscale": true,
+                "text_align": "center",
+                "precision": 0
+            },
+            "layout": {
+                "x": 6,
+                "y": 1,
+                "width": 2,
+                "height": 2
+            }
+        },
+        {
+            "id": 6,
+            "definition": {
+                "type": "query_value",
+                "title": "SUCCESS RATE",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "formulas": [
+                            {
+                                "formula": "(a / (a + b)) * 100"
+                            }
+                        ],
+                        "queries": [
+                            {
+                                "data_source": "metrics",
+                                "name": "a",
+                                "query": "sum:sentinel.action.sent{service:$service}.as_count()"
+                            },
+                            {
+                                "data_source": "metrics",
+                                "name": "b",
+                                "query": "sum:sentinel.action.failed{service:$service}.as_count()"
+                            }
+                        ],
+                        "response_format": "scalar",
+                        "conditional_formats": [
+                            {
+                                "comparator": ">=",
+                                "value": 95,
+                                "palette": "white_on_green"
+                            },
+                            {
+                                "comparator": ">=",
+                                "value": 85,
+                                "palette": "white_on_yellow"
+                            },
+                            {
+                                "comparator": "<",
+                                "value": 85,
+                                "palette": "white_on_red"
+                            }
+                        ]
+                    }
+                ],
+                "autoscale": false,
+                "custom_unit": "%",
+                "text_align": "center",
+                "precision": 1
+            },
+            "layout": {
+                "x": 8,
+                "y": 1,
+                "width": 2,
+                "height": 2
+            }
+        },
+        {
+            "id": 7,
+            "definition": {
+                "type": "query_value",
+                "title": "E2E LATENCY P95",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "p95:sentinel.e2e.decision_latency_ms{service:$service}",
+                        "conditional_formats": [
+                            {
+                                "comparator": "<=",
+                                "value": 500,
+                                "palette": "white_on_green"
+                            },
+                            {
+                                "comparator": "<=",
+                                "value": 1000,
+                                "palette": "white_on_yellow"
+                            },
+                            {
+                                "comparator": ">",
+                                "value": 1000,
+                                "palette": "white_on_red"
+                            }
+                        ]
+                    }
+                ],
+                "autoscale": true,
+                "custom_unit": "ms",
+                "text_align": "center",
+                "precision": 0
+            },
+            "layout": {
+                "x": 10,
+                "y": 1,
+                "width": 2,
+                "height": 2
+            }
+        },
+        {
+            "id": 8,
+            "definition": {
+                "type": "note",
+                "content": "LATENCY & SLO PERFORMANCE",
+                "background_color": "black",
+                "font_size": "18",
+                "text_align": "left",
+                "vertical_align": "center",
+                "show_tick": false,
+                "has_padding": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 3,
+                "width": 12,
+                "height": 1
+            }
+        },
+        {
+            "id": 9,
+            "definition": {
+                "type": "timeseries",
+                "title": "End-to-End Decision Latency • p50 | p95 | p99",
+                "title_size": "16",
+                "title_align": "left",
+                "requests": [
+                    {
+                        "q": "p50:sentinel.e2e.decision_latency_ms{service:$service}",
+                        "display_type": "line",
+                        "style": {
+                            "palette": "cool",
+                            "line_type": "solid",
+                            "line_width": "thick"
+                        },
+                        "metadata": [
+                            {
+                                "expression": "p50:sentinel.e2e.decision_latency_ms{service:$service}",
+                                "alias_name": "p50 Median"
+                            }
+                        ]
+                    },
+                    {
+                        "q": "p95:sentinel.e2e.decision_latency_ms{service:$service}",
+                        "display_type": "line",
+                        "style": {
+                            "palette": "warm",
+                            "line_type": "solid",
+                            "line_width": "thick"
+                        },
+                        "metadata": [
+                            {
+                                "expression": "p95:sentinel.e2e.decision_latency_ms{service:$service}",
+                                "alias_name": "p95 Target"
+                            }
+                        ]
+                    },
+                    {
+                        "q": "p99:sentinel.e2e.decision_latency_ms{service:$service}",
+                        "display_type": "line",
+                        "style": {
+                            "palette": "orange",
+                            "line_type": "solid",
+                            "line_width": "thick"
+                        },
+                        "metadata": [
+                            {
+                                "expression": "p99:sentinel.e2e.decision_latency_ms{service:$service}",
+                                "alias_name": "p99 Worst"
+                            }
+                        ]
+                    }
+                ],
+                "markers": [
+                    {
+                        "value": "y = 500",
+                        "display_type": "ok dashed",
+                        "label": "SLO Target 500ms"
+                    },
+                    {
+                        "value": "y = 1000",
+                        "display_type": "error dashed",
+                        "label": "Critical 1000ms"
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true,
+                    "label": "Latency (ms)"
+                },
+                "show_legend": true,
+                "legend_layout": "horizontal"
+            },
+            "layout": {
+                "x": 0,
+                "y": 4,
+                "width": 8,
+                "height": 4
+            }
+        },
+        {
+            "id": 10,
+            "definition": {
+                "type": "toplist",
+                "title": "Slowest Stages (p95)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "top(p95:sentinel.stage.latency_ms{service:$service} by {stage}, 10, 'mean', 'desc')",
+                        "style": {
+                            "palette": "warm"
+                        }
+                    }
+                ]
+            },
+            "layout": {
+                "x": 8,
+                "y": 4,
+                "width": 4,
+                "height": 4
+            }
+        },
+        {
+            "id": 11,
+            "definition": {
+                "type": "timeseries",
+                "title": "Stage Latency Breakdown (p95 by Stage)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "p95:sentinel.stage.latency_ms{service:$service} by {stage}",
+                        "display_type": "line",
+                        "style": {
+                            "palette": "dog_classic"
+                        }
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true,
+                    "label": "ms"
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 8,
+                "width": 8,
+                "height": 3
+            }
+        },
+        {
+            "id": 12,
+            "definition": {
+                "type": "heatmap",
+                "title": "Latency Distribution Heatmap",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "p95:sentinel.stage.latency_ms{service:$service} by {stage}",
+                        "style": {
+                            "palette": "hostmap_blues"
+                        }
+                    }
+                ]
+            },
+            "layout": {
+                "x": 8,
+                "y": 8,
+                "width": 4,
+                "height": 3
+            }
+        },
+        {
+            "id": 13,
+            "definition": {
+                "type": "note",
+                "content": "LLM INTELLIGENCE LAYER",
+                "background_color": "black",
+                "font_size": "18",
+                "text_align": "left",
+                "vertical_align": "center",
+                "show_tick": false,
+                "has_padding": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 11,
+                "width": 12,
+                "height": 1
+            }
+        },
+        {
+            "id": 14,
+            "definition": {
+                "type": "query_value",
+                "title": "TOTAL TOKENS",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.llm.tokens.total{service:$service}.as_count()"
+                    }
+                ],
+                "autoscale": true,
+                "text_align": "center",
+                "precision": 0
+            },
+            "layout": {
+                "x": 0,
+                "y": 12,
+                "width": 3,
+                "height": 2
+            }
+        },
+        {
+            "id": 15,
+            "definition": {
+                "type": "query_value",
+                "title": "TOTAL COST",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.llm.cost.usd{service:$service}.rollup(sum)"
+                    }
+                ],
+                "autoscale": true,
+                "custom_unit": "USD",
+                "text_align": "center",
+                "precision": 2
+            },
+            "layout": {
+                "x": 3,
+                "y": 12,
+                "width": 3,
+                "height": 2
+            }
+        },
+        {
+            "id": 16,
+            "definition": {
+                "type": "query_value",
+                "title": "PARSE FAILURES",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.llm.parse_fail{service:$service}.as_count()",
+                        "conditional_formats": [
+                            {
+                                "comparator": "<=",
+                                "value": 5,
+                                "palette": "white_on_green"
+                            },
+                            {
+                                "comparator": ">",
+                                "value": 5,
+                                "palette": "white_on_yellow"
+                            },
+                            {
+                                "comparator": ">",
+                                "value": 20,
+                                "palette": "white_on_red"
+                            }
+                        ]
+                    }
+                ],
+                "autoscale": true,
+                "text_align": "center",
+                "precision": 0
+            },
+            "layout": {
+                "x": 6,
+                "y": 12,
+                "width": 3,
+                "height": 2
+            }
+        },
+        {
+            "id": 17,
+            "definition": {
+                "type": "query_value",
+                "title": "TOOL ERRORS",
+                "title_size": "13",
+                "title_align": "center",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.tool.error{service:$service}.as_count()",
+                        "conditional_formats": [
+                            {
+                                "comparator": "<=",
+                                "value": 5,
+                                "palette": "white_on_green"
+                            },
+                            {
+                                "comparator": ">",
+                                "value": 5,
+                                "palette": "white_on_yellow"
+                            },
+                            {
+                                "comparator": ">",
+                                "value": 20,
+                                "palette": "white_on_red"
+                            }
+                        ]
+                    }
+                ],
+                "autoscale": true,
+                "text_align": "center",
+                "precision": 0
+            },
+            "layout": {
+                "x": 9,
+                "y": 12,
+                "width": 3,
+                "height": 2
+            }
+        },
+        {
+            "id": 18,
+            "definition": {
+                "type": "timeseries",
+                "title": "Cost Burn Rate (USD per hour by Model)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.llm.cost.usd{service:$service} by {model}.rollup(sum, 3600)",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "semantic"
+                        }
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true,
+                    "label": "USD/hr"
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 14,
+                "width": 6,
+                "height": 3
+            }
+        },
+        {
+            "id": 20,
+            "definition": {
+                "type": "toplist",
+                "title": "Top Agents by Token Usage",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "top(sum:sentinel.llm.tokens.total{service:$service} by {agent}.as_count(), 10, 'sum', 'desc')",
+                        "style": {
+                            "palette": "purple"
+                        }
+                    }
+                ]
+            },
+            "layout": {
+                "x": 6,
+                "y": 14,
+                "width": 6,
+                "height": 3
+            }
+        },
+        {
+            "id": 21,
+            "definition": {
+                "type": "timeseries",
+                "title": "LLM Response Latency p95 (by Agent × Model)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "p95:sentinel.llm.latency_ms{service:$service} by {agent,model}",
+                        "display_type": "line",
+                        "style": {
+                            "palette": "cool"
+                        }
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true,
+                    "label": "ms"
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 17,
+                "width": 12,
+                "height": 3
+            }
+        },
+        {
+            "id": 22,
+            "definition": {
+                "type": "note",
+                "content": "PIPELINE FLOW & BACKPRESSURE",
+                "background_color": "black",
+                "font_size": "18",
+                "text_align": "left",
+                "vertical_align": "center",
+                "show_tick": false,
+                "has_padding": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 20,
+                "width": 12,
+                "height": 1
+            }
+        },
+        {
+            "id": 23,
+            "definition": {
+                "type": "timeseries",
+                "title": "Queue Depth by Topic (Backpressure Indicator)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "avg:sentinel.pipeline.queue_depth{service:$service} by {topic}",
+                        "display_type": "area",
+                        "style": {
+                            "palette": "dog_classic"
+                        }
+                    }
+                ],
+                "markers": [
+                    {
+                        "value": "y = 25",
+                        "display_type": "warning dashed",
+                        "label": "Warning Threshold"
+                    },
+                    {
+                        "value": "y = 50",
+                        "display_type": "error dashed",
+                        "label": "Critical Threshold"
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true,
+                    "label": "Queue Depth"
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 21,
+                "width": 8,
+                "height": 3
+            }
+        },
+        {
+            "id": 24,
+            "definition": {
+                "type": "timeseries",
+                "title": "Pipeline Outcomes (sent • failed • skipped)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.pipeline.completed{service:$service,outcome:sent}.as_count()",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "green"
+                        },
+                        "metadata": [
+                            {
+                                "expression": "sum:sentinel.pipeline.completed{service:$service,outcome:sent}.as_count()",
+                                "alias_name": "Sent"
+                            }
+                        ]
+                    },
+                    {
+                        "q": "sum:sentinel.pipeline.completed{service:$service,outcome:failed}.as_count()",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "red"
+                        },
+                        "metadata": [
+                            {
+                                "expression": "sum:sentinel.pipeline.completed{service:$service,outcome:failed}.as_count()",
+                                "alias_name": "Failed"
+                            }
+                        ]
+                    },
+                    {
+                        "q": "sum:sentinel.pipeline.completed{service:$service,outcome:skipped}.as_count()",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "grey"
+                        },
+                        "metadata": [
+                            {
+                                "expression": "sum:sentinel.pipeline.completed{service:$service,outcome:skipped}.as_count()",
+                                "alias_name": "Skipped"
+                            }
+                        ]
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 8,
+                "y": 21,
+                "width": 4,
+                "height": 3
+            }
+        },
+        {
+            "id": 25,
+            "definition": {
+                "type": "note",
+                "content": "RELIABILITY & ERROR ANALYSIS",
+                "background_color": "black",
+                "font_size": "18",
+                "text_align": "left",
+                "vertical_align": "center",
+                "show_tick": false,
+                "has_padding": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 24,
+                "width": 12,
+                "height": 1
+            }
+        },
+        {
+            "id": 26,
+            "definition": {
+                "type": "toplist",
+                "title": "Top Tool Errors (By Tool × Error Type)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "top(sum:sentinel.tool.error{service:$service} by {tool,error_type}.as_count(), 15, 'sum', 'desc')",
+                        "style": {
+                            "palette": "warm"
+                        }
+                    }
+                ]
+            },
+            "layout": {
+                "x": 0,
+                "y": 25,
+                "width": 4,
+                "height": 3
+            }
+        },
+        {
+            "id": 27,
+            "definition": {
+                "type": "timeseries",
+                "title": "Dispatcher Success vs Failure",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.action.sent{service:$service}.as_count()",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "green"
+                        },
+                        "metadata": [
+                            {
+                                "expression": "sum:sentinel.action.sent{service:$service}.as_count()",
+                                "alias_name": "Sent"
+                            }
+                        ]
+                    },
+                    {
+                        "q": "sum:sentinel.action.failed{service:$service}.as_count()",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "red"
+                        },
+                        "metadata": [
+                            {
+                                "expression": "sum:sentinel.action.failed{service:$service}.as_count()",
+                                "alias_name": "Failed"
+                            }
+                        ]
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 4,
+                "y": 25,
+                "width": 4,
+                "height": 3
+            }
+        },
+        {
+            "id": 28,
+            "definition": {
+                "type": "timeseries",
+                "title": "Stage SLO Breaches (Timeouts by Stage)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.stage.timeout{service:$service} by {stage}.as_count()",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "warm"
+                        }
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 8,
+                "y": 25,
+                "width": 4,
+                "height": 3
+            }
+        },
+        {
+            "id": 29,
+            "definition": {
+                "type": "note",
+                "content": "SECURITY & GAMEDAY MONITORING",
+                "background_color": "black",
+                "font_size": "18",
+                "text_align": "left",
+                "vertical_align": "center",
+                "show_tick": false,
+                "has_padding": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 28,
+                "width": 12,
+                "height": 1
+            }
+        },
+        {
+            "id": 30,
+            "definition": {
+                "type": "timeseries",
+                "title": "Security Events by Type (Injection Detection)",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.security.event{service:$service} by {type}.as_count()",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "semantic"
+                        }
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true,
+                    "label": "Events"
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 0,
+                "y": 29,
+                "width": 6,
+                "height": 3
+            }
+        },
+        {
+            "id": 31,
+            "definition": {
+                "type": "timeseries",
+                "title": "GameDay Scenario Changes",
+                "title_size": "16",
+                "requests": [
+                    {
+                        "q": "sum:sentinel.gameday.scenario_set{service:$service} by {scenario}.as_count()",
+                        "display_type": "bars",
+                        "style": {
+                            "palette": "purple"
+                        }
+                    }
+                ],
+                "yaxis": {
+                    "include_zero": true
+                },
+                "show_legend": true
+            },
+            "layout": {
+                "x": 6,
+                "y": 29,
+                "width": 6,
+                "height": 3
+            }
+        }
+    ]
+}

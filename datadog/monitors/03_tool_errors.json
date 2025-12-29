@@ -1,0 +1,22 @@
+{
+    "name": "SentinelOps 🧰 Tool error rate elevated",
+    "type": "metric alert",
+    "query": "sum(last_5m):sum:sentinel.tool.error{service:sentinelops,env:dev}.as_count() > 2",
+    "message": "Tool errors are elevated.\n\nRunbook:\n- Check tool tag tool:* and error_type:*\n- If dispatcher errors: verify simulated outage / dependency\n- If sop_lookup errors: check SOP file + latency timeouts\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:dependency"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 2,
+            "warning": 1
+        },
+        "include_tags": true,
+        "require_full_window": false
+    },
+    "priority": 2
+}

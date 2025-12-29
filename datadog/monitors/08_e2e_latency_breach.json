@@ -1,0 +1,22 @@
+{
+    "name": "SentinelOps ⏱️ E2E Decision Latency SLO breach detected",
+    "type": "metric alert",
+    "query": "sum(last_5m):sum:sentinel.slo.e2e_decision_latency_breach{service:sentinelops,env:dev}.as_count() > 0",
+    "message": "E2E Decision latency exceeded configured SLO (SLO_PIPELINE_E2E_MS).\n\nRunbook:\n- Check stage latency heatmap (observer/thinker/doer)\n- Correlate with queue_depth + tool_error + llm.latency\n- Enable degraded behavior if repeated\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:slo"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 0,
+            "warning": -1
+        },
+        "include_tags": true,
+        "require_full_window": false
+    },
+    "priority": 2
+}
