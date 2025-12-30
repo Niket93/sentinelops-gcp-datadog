@@ -1,0 +1,29 @@
+{
+    "id": 17318920,
+    "name": "SentinelOps 🔥 E2E decision latency p95 too high",
+    "type": "metric alert",
+    "query": "avg(last_5m):p95:sentinel.e2e.decision_latency_ms{service:sentinelops,env:dev} > 5000",
+    "message": "E2E decision latency p95 is breaching target.\n\nRunbook:\n1) Check queue depth (clips/observations/decisions)\n2) Check LLM latency and parse failures\n3) Check GameDay scenario + tool failures\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:latency"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 5000,
+            "warning": 3500
+        },
+        "notify_audit": false,
+        "include_tags": true,
+        "require_full_window": true,
+        "new_host_delay": 0,
+        "evaluation_delay": 0,
+        "renotify_interval": 0,
+        "notify_no_data": false
+    },
+    "priority": 1,
+    "draft_status": "published"
+}

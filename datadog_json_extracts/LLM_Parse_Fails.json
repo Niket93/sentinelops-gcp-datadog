@@ -1,0 +1,28 @@
+{
+    "id": 17318950,
+    "name": "SentinelOps 🤖 LLM parse failures detected",
+    "type": "metric alert",
+    "query": "sum(last_5m):sum:sentinel.llm.parse_fail{service:sentinelops,env:dev}.as_count() > 0",
+    "message": "LLM output parsing failed (JSON not parseable). This is a key reliability signal.\n\nRunbook:\n- Check which agent via tag agent:*\n- Reduce temperature, lower max_output_tokens, tighten system prompt\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:llm"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 0,
+            "warning": -1
+        },
+        "include_tags": true,
+        "require_full_window": false,
+        "notify_no_data": false,
+        "renotify_interval": 0,
+        "notify_audit": false,
+        "new_host_delay": 300
+    },
+    "priority": 2,
+    "draft_status": "published"
+}

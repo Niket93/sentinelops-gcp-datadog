@@ -1,0 +1,28 @@
+{
+    "id": 17318948,
+    "name": "SentinelOps 🚨 Dispatcher delivery failures detected",
+    "type": "metric alert",
+    "query": "sum(last_5m):sum:sentinel.action.failed{service:sentinelops,env:dev}.as_count() > 0",
+    "message": "Dispatcher failed to deliver at least one action.\n\nRunbook:\n- Verify dispatcher_outage GameDay scenario\n- Check tool error tag tool:dispatcher\n- Confirm fallback behavior + dedup behavior\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:action"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 0,
+            "warning": -1
+        },
+        "include_tags": true,
+        "require_full_window": false,
+        "notify_no_data": false,
+        "renotify_interval": 0,
+        "notify_audit": false,
+        "new_host_delay": 300
+    },
+    "priority": 1,
+    "draft_status": "published"
+}

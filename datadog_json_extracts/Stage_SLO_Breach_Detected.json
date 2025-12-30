@@ -1,0 +1,28 @@
+{
+    "id": 17318946,
+    "name": "SentinelOps ⏱️ Stage SLO breach detected (any stage_timeout)",
+    "type": "metric alert",
+    "query": "sum(last_5m):sum:sentinel.stage.timeout{service:sentinelops,env:dev}.as_count() > 0",
+    "message": "One or more pipeline stages exceeded configured SLO.\n\nRunbook:\n- Identify stage from tag stage:*\n- Compare with queue_depth + tool_error + LLM latency\n- If repeated: enable degraded behavior + reduce LLM max tokens\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:slo"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 0,
+            "warning": -1
+        },
+        "include_tags": true,
+        "require_full_window": false,
+        "notify_no_data": false,
+        "renotify_interval": 0,
+        "notify_audit": false,
+        "new_host_delay": 300
+    },
+    "priority": 2,
+    "draft_status": "published"
+}

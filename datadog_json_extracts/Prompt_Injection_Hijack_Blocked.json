@@ -1,0 +1,28 @@
+{
+    "id": 17318949,
+    "name": "SentinelOps 🛡️ Prompt injection / hijack blocked",
+    "type": "metric alert",
+    "query": "sum(last_5m):sum:sentinel.security.event{service:sentinelops,env:dev}.as_count() > 0",
+    "message": "Security guard blocked a prompt injection or action hijack attempt.\n\nExpected during demo injection scenario.\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:security"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 0,
+            "warning": -1
+        },
+        "include_tags": true,
+        "require_full_window": false,
+        "notify_no_data": false,
+        "renotify_interval": 0,
+        "notify_audit": false,
+        "new_host_delay": 300
+    },
+    "priority": 3,
+    "draft_status": "published"
+}

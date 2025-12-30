@@ -1,0 +1,29 @@
+{
+    "id": 17318925,
+    "name": "SentinelOps ⏱️ E2E Decision Latency p95 is breaching SLO",
+    "type": "metric alert",
+    "query": "avg(last_5m):p95:sentinel.e2e.decision_latency_ms{service:sentinelops,env:dev} > 5000",
+    "message": "E2E decision latency p95 is above SLO (5000ms).\n\nRunbook:\n- Check stage latencies: p95:sentinel.stage.latency_ms by {stage}\n- Check queue depth: avg:sentinel.pipeline.queue_depth by {topic}\n- Check tool errors: sum:sentinel.tool.error by {tool,error_type}\n- Check LLM latency: p95:sentinel.llm.latency_ms by {agent,model}\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:latency",
+        "slo:e2e_decision_5000ms"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 5000,
+            "warning": 3500
+        },
+        "include_tags": true,
+        "require_full_window": true,
+        "notify_no_data": false,
+        "renotify_interval": 0,
+        "notify_audit": false,
+        "new_host_delay": 300
+    },
+    "priority": 1,
+    "draft_status": "published"
+}

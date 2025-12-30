@@ -1,0 +1,27 @@
+{
+    "id": 17318951,
+    "name": "SentinelOps 📦 Pipeline queue depth rising",
+    "type": "metric alert",
+    "query": "avg(last_5m):avg:sentinel.pipeline.queue_depth{service:sentinelops,env:dev} > 20",
+    "message": "Queue depth is rising (potential backpressure).\n\nRunbook:\n- Check which topic via tag topic:*\n- Correlate with observer/thinker/doer stage latency\n\nTags: service:sentinelops env:dev",
+    "tags": [
+        "service:sentinelops",
+        "env:dev",
+        "team:hackathon",
+        "project:sentinelops",
+        "signal:backpressure"
+    ],
+    "options": {
+        "thresholds": {
+            "critical": 20,
+            "warning": 10
+        },
+        "include_tags": true,
+        "require_full_window": true,
+        "notify_no_data": false,
+        "notify_audit": false,
+        "new_host_delay": 300
+    },
+    "priority": 3,
+    "draft_status": "published"
+}
